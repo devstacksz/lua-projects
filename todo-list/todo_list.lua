@@ -1,39 +1,20 @@
--- table of todos
-local todos = {}
+local DbManager = require("db_manager")
+local dbManager = DbManager:new()
+dbManager:createTable()
 
 local function add_todo(name)
-	local todo_to_add = { name = name, status = 0 }
-	table.insert(todos, todo_to_add)
+	dbManager:addEntry(name)
 end
 
-local function find_todo(name)
-	for i, v in ipairs(todos) do
-		if v.name == name then
-			return i
-		end
-	end
-	print("Not found")
-	return nil
-end
-
-local function update_todo(name, status)
-	local index = find_todo(name)
-	if index ~= nil then
-		todos[index].status = status
-	end
-end
-
-local function remove_todo(name)
-	local index = find_todo(name)
-	if index ~= nil then
-		table.remove(todos, index)
-	end
+local function remove_todo(id)
+	dbManager:deleteEntry(id)
 end
 
 local function print_actions()
 	print("-----")
-	for _, v in ipairs(todos) do
-		print(v.name .. ": " .. v.status)
+	local result = dbManager:getEntries()
+	for _, v in ipairs(result) do
+		print(v.id .. " " .. v.title .. ": " .. v.done)
 	end
 	print("-----")
 end
@@ -85,7 +66,6 @@ if arg[1] == nil then
 		print("Select one of the following options:")
 		print()
 		print("* add")
-		print("* update")
 		print("* remove")
 		print("* print")
 		print()
